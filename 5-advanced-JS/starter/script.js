@@ -224,7 +224,6 @@ interviewQuestion('designer')('TJ');
 interviewQuestion('teacher')('DJ');
 interviewQuestion('driver')('LJ');
 
-
 /////////////////////////////////
 // Lecture: Bind, call and apply
 
