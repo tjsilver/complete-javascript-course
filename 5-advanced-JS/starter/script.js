@@ -300,7 +300,7 @@ console.log(fullJapan);
 a) question itself
 b) the answers from which the player can choose the correct one (choose an adequate data structure here, array, object, etc.)
 c) correct answer (I would use a number for this)
-
+ 
 2. Create a couple of questions using the constructor
 
 3. Store them all inside an array
@@ -310,11 +310,74 @@ c) correct answer (I would use a number for this)
 5. Use the 'prompt' function to ask the user for the correct answer. The user should input the number of the correct answer such as you displayed it on Task 4.
 
 6. Check if the answer is correct and print to the console whether the answer is correct ot nor (Hint: write another method for this).
+function checkQuestion(questionObj, ans) {
+    return ans === questionObj.correctAnswer;
+}
 
 7. Suppose this code would be a plugin for other programmers to use in their code. So make sure that all your code is private and doesn't interfere with the other programmers code (Hint: we learned a special technique to do exactly that).
 */
 
 // first answers here
+
+//Immediately Invoked Function Expression (IIFE) gives privacy to code (point 7 above). Creates a new scope for all the functions. Prevents code being overriden in future by someone else writing variable with same name. That is the main goal of using an IIFE. IIFE also known as self-executing anonymous function.
+/*
+(function() {
+    function Question(question, answers, correctAnswer) {
+        this.question = question;
+        this.answers = answers;
+        this.correctAnswer = parseInt(correctAnswer);
+        this.instruction = 'Choose your answer:';
+    }
+    
+    Question.prototype.printQuestion = function () {
+        console.log(this.question);
+        console.log(this.instruction);
+        for (let i=0; i<this.answers.length; i++) {
+            console.log(i + ": " + this.answers[i]);
+        } 
+    }
+    
+    Question.prototype.checkAnswer = function(ans) {
+        if (ans === this.correctAnswer) {
+            console.log('Correct!');
+            return true;
+        } else {
+            console.log('Wrong answer!');
+            return false;
+        }
+    }
+
+    let q1 = new Question(
+        'What food do cats like best?',
+        ['meat biscuits', 'apples', 'carrots'],
+    0);
+    let q2 = new Question(
+        'What is Javascript?',
+        ['a cheese', 'a framework', 'a programming language used on the web', 'an elephant\'s nose'],
+    2);
+    let q3 = new Question(
+        'What sound do cats make?',
+        ['woof!', 'miaow'],
+    1);
+    
+    let q4 = new Question(
+        'How noisy is Streatham?',
+        ['deathly quiet', 'a few background noises', 'I can\'t hear myself think'],
+    2);
+    
+    let questionArray = [q1, q2, q3, q4];
+    
+    let rand = Math.floor(Math.random() * (questionArray.length));
+
+    questionArray[rand].printQuestion();
+    
+    let answer = parseInt(prompt('Please select the correct answer.'));
+    
+    questionArray[rand].checkAnswer(answer);
+    
+    
+})();
+*/
 
 /*
 --- Expert level ---
@@ -327,3 +390,86 @@ c) correct answer (I would use a number for this)
 
 11. Display the score in the console. Use yet another method for this.
 */
+(function() {
+    function Question(question, answers, correctAnswer) {
+        this.question = question;
+        this.answers = answers;
+        this.correctAnswer = parseInt(correctAnswer);
+        this.instruction = 'Choose your answer:';
+    }
+    
+    Question.prototype.printQuestion = function () {
+        console.log(this.question);
+        console.log(this.instruction);
+        for (let i=0; i<this.answers.length; i++) {
+            console.log(i + ": " + this.answers[i]);
+        } 
+    }
+    
+    Question.prototype.checkAnswer = function(ans, callback) {
+        let sc;
+        if (ans === this.correctAnswer) {
+            console.log('Correct!');
+            sc = callback(true);
+        } else {
+            console.log('Wrong answer!');
+            sc = callback(false);
+        }
+        this.displayScore(sc);
+    }    
+
+    Question.prototype.displayScore = function(score) {
+        console.log('Your current score is: ' + score);
+        console.log('----------------------');
+
+    }
+    
+    let q1 = new Question(
+        'What food do cats like best?',
+        ['meat biscuits', 'apples', 'carrots'],
+    0);
+    let q2 = new Question(
+        'What is Javascript?',
+        ['a cheese', 'a framework', 'a programming language used on the web', 'an elephant\'s nose'],
+    2);
+    let q3 = new Question(
+        'What sound do cats make?',
+        ['woof!', 'miaow'],
+    1);
+    
+    let q4 = new Question(
+        'How noisy is Streatham?',
+        ['deathly quiet', 'a few background noises', 'I can\'t hear myself think'],
+    2);
+    
+    let questionArray = [q1, q2, q3, q4];
+
+    function score() {
+        let sc = 0;
+        return function(correct) {
+            if (correct) {
+                sc++;
+            }
+            return sc;
+        }
+    }
+
+    let keepScore = score();
+
+    function nextQuestion() {
+    
+        let rand = Math.floor(Math.random() * (questionArray.length));
+    
+        questionArray[rand].printQuestion();
+        
+        let answer = prompt('Please select the correct answer or type \'exit\' into the box.');
+                
+        if (answer !== 'exit') {
+            questionArray[rand].checkAnswer(parseInt(answer), keepScore);
+            nextQuestion();
+        }
+    }
+    
+    nextQuestion();
+    
+})();
