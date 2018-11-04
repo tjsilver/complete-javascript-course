@@ -152,10 +152,6 @@ let budgetController = (function() { // IIFE
                 totalExp: data.totals.exp,
                 percentage: data.percentage
             };
-        },
-
-        testing: function() {
-            console.log(data);
         }
     };
 
@@ -401,8 +397,6 @@ let controller = (function(budgetCtrl, UICtrl) {
             // 6. Calculate and update percentages
             updatePercentages();
         }
-
-       
     };
 
     let ctrlDeleteItem = function(event) {
@@ -434,7 +428,6 @@ let controller = (function(budgetCtrl, UICtrl) {
 
     return {
         init: function() {
-            console.log('Application has started.');
             UICtrl.displayMonth();
             UICtrl.displayBudget({
                 budget: 0,
