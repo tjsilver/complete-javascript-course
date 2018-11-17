@@ -317,7 +317,7 @@ console.log(ages[full.indexOf(true)]);
 // ES6 
 console.log(ages.findIndex(cur => cur >= 18));
 console.log(ages.find(cur => cur >= 18));
-*/
+
 
 /////////////////////////////////
 // Lecture 111 Spread operator
@@ -349,7 +349,243 @@ const boxes2 = document.querySelectorAll('.box');
 const all = [h, ...boxes2];
 
 Array.from(all).forEach(cur => cur.style.color = 'purple');
+
+/////////////////////////////////
+// Lecture 112 Rest parameters
+
+/*
+// ES5
+function isFullAge5() {
+    // arguments is an array-like structure (object)
+    var argsArr = Array.prototype.slice.call(arguments);
+
+    argsArr.forEach(function(cur) {
+        console.log((2018-cur) >= 18);
+    })
+}
+
+//isFullAge5(1990, 1999, 1965);
+//isFullAge5(1990, 1999, 1965, 1983, 2001, 2015);
+
+// ES6
+
+function isFullAge6(...years) {
+    years.forEach(cur => console.log((2018 - cur) >= 18));
+}
+
+isFullAge6(1990, 1999, 1965);
+isFullAge6(1990, 1999, 1965, 1983, 2001, 2015);
+
+
+// ES5
+function isFullAge5(limit) {
+    // arguments is an array-like structure (object)
+    var argsArr = Array.prototype.slice.call(arguments, 1);
+    console.log(argsArr);
+
+    argsArr.forEach(function(cur) {
+        console.log((2018-cur) >= limit);
+    })
+}
+
+//isFullAge5(21, 1990, 1999, 1965);
+//isFullAge5(1990, 1999, 1965, 1983, 2001, 2015);
+
+// ES6
+
+function isFullAge6(limit, ...years) {
+    years.forEach(cur => console.log((2018-cur) >= limit));
+}
+
+//isFullAge6(1990, 1999, 1965);
+isFullAge6(18, 1990, 1999, 1965, 1983, 2001, 2015);
+
+
+
+/////////////////////////////////
+// Lecture 113 Default parameters
+
+// ES5
+function SmithPerson5(firstName, yearOfBirth, lastName, nationality) {
+    lastName  === undefined ? lastName = 'Smith' : lastName = lastName;
+    nationality === undefined ? nationality = 'American' : nationality = nationality;
+
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.yearOfBirth = yearOfBirth;
+    this.nationality = nationality;
+}
+
+var john = new SmithPerson5('John', 1990);
+var emily = new SmithPerson5('Emily', 1983, 'Diaz', 'Spanish');
+
+// ES6
+function SmithPerson6(firstName, yearOfBirth, lastName = 'Smith', nationality = 'American') {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.yearOfBirth = yearOfBirth;
+    this.nationality = nationality;
+}
+
+var jerry = new SmithPerson6('Jerry', 1990);
+var emilia = new SmithPerson6('Emilia', 1983, 'Diaz', 'Spanish');
+
+
+/////////////////////////////////
+// Lecture 114 Maps
+// Map is a new key-value data structure in ES6, can use any type of object as keys
+
+const question = new Map();
+question.set('question', 'What is the official name of the latest major Javascript version?');
+question.set(1, 'ES5');
+question.set(2, 'ES6');
+question.set(3, 'ES2015');
+question.set(4, 'ES7');
+question.set('correct', 3);
+question.set(true, 'Correct answer :D');
+question.set(false, 'Wrong, please try again!');
+
+console.log(question.get('question'));
+console.log(question.size);
+
+if (question.has(4)) {
+    //question.delete(4);
+    console.log('Answer 4 is here');
+}
+
+//question.clear();
+
+//question.forEach((value, key) => console.log(`This is ${key}, and it's set to ${value}`));
+
+for (let [key, value] of question.entries()) {
+    if (typeof(key) === 'number') {
+        console.log(`Answer ${key}: ${value}`);
+    }
+}
+
+const ans = parseInt(prompt('Write the correct answer'));
+
+console.log(question.get(ans === question.get('correct')));
+
+
+
+/////////////////////////////////
+// Lecture 115 Classes
+
+// Classes are syntactical sugar
+
+// ES5 
+var Person5 = function(name, yearOfBirth, job) {
+    this.name = name;
+    this.yearOfBirth = yearOfBirth;
+    this.job = job;
+}
+
+Person5.prototype.calculateAge = function() {
+    var age = new Date().getFullYear() - this.yearOfBirth;
+    console.log(age);
+}
+
+var john5 = new Person5('John', 1990, 'teacher');
+
+// ES6
+
+class Person6 {
+    // NB no separating punctuation required in a class
+
+    constructor (name, yearOfBirth, job) {
+        this.name = name;
+        this.yearOfBirth = yearOfBirth;
+        this.job = job;
+    }
+
+    calculateAge() {
+        let age = new Date().getFullYear() - this.yearOfBirth;
+    console.log(age);
+    }
+
+    // static methods are not inherited by instances of a class
+    static greeting() {
+        console.log('Hey there');
+    }
+}
+
+const john6 = new Person6('John', 1990, 'teacher');
+
+Person6.greeting();
+
+// classes
+// can only add methods, not properties to classes
+// classes are not hoisted so need to be declared before use
+
+
+/////////////////////////////////
+// Lecture 116 Classes with subclasses
+
+// ES5 
+var Person5 = function(name, yearOfBirth, job) {
+    this.name = name;
+    this.yearOfBirth = yearOfBirth;
+    this.job = job;
+}
+
+Person5.prototype.calculateAge = function() {
+    var age = new Date().getFullYear() - this.yearOfBirth;
+    console.log(age);
+}
+
+var Athlete5 = function(name, yearOfBirth, job, olympicGames, medals) {
+    Person5.call(this, name, yearOfBirth, job);
+    this.olympicGames = olympicGames;
+    this.medals = medals;
+}
+
+Athlete5.prototype = Object.create(Person5.prototype);
+
+Athlete5.prototype.wonMedal = function() {
+    this.medals++;
+    console.log(this.medals);
+}
+
+var johnAthlete5 = new Athlete5('John', 1990, 'swimmer', 3, 10);
+johnAthlete5.calculateAge();
+johnAthlete5.wonMedal();
+
+// ES6
+
+class Person6 {
+
+    constructor (name, yearOfBirth, job) {
+        this.name = name;
+        this.yearOfBirth = yearOfBirth;
+        this.job = job;
+    }
+
+    calculateAge() {
+        let age = new Date().getFullYear() - this.yearOfBirth;
+    console.log(age);
+    }
+}
+
+class Athlete6 extends Person6 {
+    constructor(name, yearOfBirth, job, olympicGames, medals) {
+        super(name, yearOfBirth, job);
+        this.olympicGames = olympicGames;
+        this.medals = medals;
+    }
+
+    wonMedal() {
+        this.medals++;
+        console.log(this.medals);
+    }
+}
+
+const johnAthlete6 = new Athlete6('John', 1990, 'swimmer', 3, 10);
+
+johnAthlete6.calculateAge();
+johnAthlete6.wonMedal();
+
 */
 
 /////////////////////////////////
-// Lecture 112
+// Lecture 117 
