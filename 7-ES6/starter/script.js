@@ -588,4 +588,98 @@ johnAthlete6.wonMedal();
 */
 
 /////////////////////////////////
-// Lecture 117 
+// Lecture 117 - Coding challenge
+
+///// Instructions /////
+/* 
+Suppose that you're working in a small town administration, and you're in charge of two town elements:
+1. Parks
+2. Streets
+
+It's a very small town, so right now there are only 3 parks and 4 streets. All parks and streets have a name and a build year.
+
+At an end-of-year meeting, your boss wants a final report with the following:
+1. Tree density of each park in the town (formula: number of trees / park area)
+2. Average age of each town's park (formula: sum of all ages / number of parks)
+3. The name of the park that has more that 1000 trees
+4. Total and average length of the town's streets
+5. Size classification of all streets: tiny/small/normal/big/huge. If the size is unknown, the default is normal
+
+All the report data should be printed to the console.
+
+HINT: Use some of the ES6 features: classes, subclasses, template strings, default parameters, maps, arrow functions, destructuring, etc.
+*/
+
+class TownElement {
+    constructor(name, buildYear) {
+        this.name = name;
+        this.buildYear = buildYear;
+    }
+
+    calculateAge() {
+        return new Date().getFullYear() - this.buildYear;
+    }
+}
+
+class Park extends TownElement {
+    constructor(name, buildYear, numTrees, area) {
+        super(name, buildYear);
+        this.numTrees = numTrees;
+        this.area = area;
+    }
+
+    treeDensity() {
+        return (this.numTrees/this.area).toFixed(2);
+    }
+}
+    
+class Street extends TownElement {
+    constructor(name, buildYear, length, classification = 'normal') {
+        super(name, buildYear);
+        this.length = length;
+        this.classification = classification;
+    }
+}
+
+const street1 = new Street('Streatham High Road', 1739, 1023, 'huge');
+const street2 = new Street('Babingdon Road', 1785, 323);
+const street3 = new Street('Park Avenue', 1743, 28, 'tiny');
+const street4 = new Street('Leigham Court Road', 1733, 423, 'big');
+
+const park1 = new Park('Streatham Common', 1623, 432, 4);
+const park2 = new Park('Tooting Common', 1593, 2329, 7);
+const park3 = new Park('Clapham Common', 1777, 892, 2.8);
+
+const streets = new Map();
+streets.set(1, street1);
+streets.set(2, street2);
+streets.set(3, street3);
+streets.set(4, street4);
+
+const parks = new Map();
+parks.set(1, park1);
+parks.set(2, park2);
+parks.set(3, park3);
+
+//1. Tree density of each park in the town (formula: number of trees / park area)
+parks.forEach((value, key) => console.log(`The tree density of park ${key}: ${value.name} is ${value.treeDensity()} trees per square km.`));
+//2. Average age of each town's park (formula: sum of all ages / number of parks)
+const parkAges = [];
+parks.forEach(value => parkAges.push(value.calculateAge()));
+const avAge = (parkAges.reduce((prev, cur) => prev + cur)/parkAges.length).toFixed(2); 
+console.log(`The average age of the parks is ${avAge} years.`);
+//3. The name of the park that has more that 1000 trees
+function over1000(parks) {
+    parks.forEach(cur => cur.numTrees >= 1000 ? console.log(`${cur.name} has ${cur.numTrees} trees which is a lot of trees!`): null);
+}
+over1000(parks);
+//4. Total and average length of the town's streets
+const lengths = [];
+streets.forEach(cur => lengths.push(cur.length));
+const total = lengths.reduce((prev, cur) => prev + cur);
+const avLen = (total/streets.size).toFixed(2);
+console.log(`The total length of the town's streets is ${total}m and the average length is ${avLen}m.`);
+
+//5. Size classification of all streets: tiny/small/normal/big/huge. If the size is unknown, the default is normal
+
+streets.forEach((value, key) => console.log(`Street number ${key} is called ${value.name} and is classified ${value.classification}`));
