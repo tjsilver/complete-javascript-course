@@ -629,57 +629,72 @@ class Park extends TownElement {
     }
 
     treeDensity() {
-        return (this.numTrees/this.area).toFixed(2);
+        const density = (this.numTrees/this.area).toFixed(2);
+        console.log(`The tree density of park ${this.name} is ${density} trees per square km.`);
     }
 }
     
 class Street extends TownElement {
-    constructor(name, buildYear, length, classification = 'normal') {
+    constructor(name, buildYear, length, size = 3) {
         super(name, buildYear);
         this.length = length;
-        this.classification = classification;
+        this.size = size;
+    }
+
+    classifyStreet() {
+        const classification = new Map();
+        classification.set(1, 'tiny');
+        classification.set(2, 'small');
+        classification.set(3, 'normal');
+        classification.set(4, 'big');
+        classification.set(5, 'huge');
+        console.log(`${this.name} was built in ${this.buildYear} and is classified as ${classification.get(this.size)}.`)
     }
 }
 
-const street1 = new Street('Streatham High Road', 1739, 1023, 'huge');
-const street2 = new Street('Babingdon Road', 1785, 323);
-const street3 = new Street('Park Avenue', 1743, 28, 'tiny');
-const street4 = new Street('Leigham Court Road', 1733, 423, 'big');
+const parks = [
+    new Park('Streatham Common', 1623, 432, 4), 
+    new Park('Tooting Common', 1593, 2329, 7), 
+    new Park('Clapham Common', 1777, 892, 2.8)
+];
 
-const park1 = new Park('Streatham Common', 1623, 432, 4);
-const park2 = new Park('Tooting Common', 1593, 2329, 7);
-const park3 = new Park('Clapham Common', 1777, 892, 2.8);
+const streets = [
+    new Street('Streatham High Road', 1739, 1023, 5), 
+    new Street('Babingdon Road', 1785, 323), 
+    new Street('Park Avenue', 1743, 28, 1), 
+    new Street('Leigham Court Road', 1733, 423, 4)
+];
 
-const streets = new Map();
-streets.set(1, street1);
-streets.set(2, street2);
-streets.set(3, street3);
-streets.set(4, street4);
+function calc(arr) {
+    
+    const sum = arr.reduce((prev, cur) => prev + cur);
+    return [sum, (sum/arr.length).toFixed(2)];
 
-const parks = new Map();
-parks.set(1, park1);
-parks.set(2, park2);
-parks.set(3, park3);
-
-//1. Tree density of each park in the town (formula: number of trees / park area)
-parks.forEach((value, key) => console.log(`The tree density of park ${key}: ${value.name} is ${value.treeDensity()} trees per square km.`));
-//2. Average age of each town's park (formula: sum of all ages / number of parks)
-const parkAges = [];
-parks.forEach(value => parkAges.push(value.calculateAge()));
-const avAge = (parkAges.reduce((prev, cur) => prev + cur)/parkAges.length).toFixed(2); 
-console.log(`The average age of the parks is ${avAge} years.`);
-//3. The name of the park that has more that 1000 trees
-function over1000(parks) {
-    parks.forEach(cur => cur.numTrees >= 1000 ? console.log(`${cur.name} has ${cur.numTrees} trees which is a lot of trees!`): null);
 }
-over1000(parks);
-//4. Total and average length of the town's streets
-const lengths = [];
-streets.forEach(cur => lengths.push(cur.length));
-const total = lengths.reduce((prev, cur) => prev + cur);
-const avLen = (total/streets.size).toFixed(2);
-console.log(`The total length of the town's streets is ${total}m and the average length is ${avLen}m.`);
 
-//5. Size classification of all streets: tiny/small/normal/big/huge. If the size is unknown, the default is normal
+function reportParks(p) {
+    console.log('----- Parks report -----');
+    //1. Tree density of each park in the town (formula: number of trees / park area)
+    p.forEach(cur => cur.treeDensity());
+    //2. Average age of each town's park (formula: sum of all ages / number of parks)
+    //const avAge = ((p.map(cur => cur.calculateAge()).reduce((cur, prev) => cur + prev))/p.length).toFixed(2);
+    const ages = p.map(cur => new Date().getFullYear() - cur.buildYear);
+    const [total, av] = calc(ages);
+    console.log(`The average age of all ${p.length} parks is ${av} years old.`);
+    //3. The name of the park that has more that 1000 trees    
+    const index = p.map(el => el.numTrees).findIndex(el => el >=1000);
+    console.log(`${p[index].name} has more than 1000 trees!!`);
+   
+    
+}
+function reportStreets(s) {
+    console.log('----- Streets report -----');
+    //4. Total and average length of the town's streets
+    const [totalStreet, avStreet] = calc(s.map(el => el.length));
+    console.log(`The total length of all ${s.length} of the town's streets is ${totalStreet}m and the average length is ${avStreet}m.`);
+    //5. Size classification of all streets: tiny/small/normal/big/huge. If the size is unknown, the default is normal
+    streets.forEach(el => el.classifyStreet());
+}
 
-streets.forEach((value, key) => console.log(`Street number ${key} is called ${value.name} and is classified ${value.classification}`));
+reportParks(parks);
+reportStreets(streets);
